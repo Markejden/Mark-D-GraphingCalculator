@@ -1,34 +1,23 @@
 require 'ruby2d'
-require_relative 'Point_create'
+require_relative 'Create_functions'
+set title: 'Desmos', background: 'white'
+
+col = 'black'
 width = get :width
 height = get :height
-
-def Line(x1,x2,y1,y2,z,color)
-    Line.new(
-        x1: x1, y1: y1,
-        x2: x2, y2: y2,
-        width: 5,
-        color: color,
-        z: z
-    )
-end
-
-def Pixel(x,y,z,color)
-    Square.new(
-        x: x, y: y,
-        size: 5,
-        color: color,
-        z: z
-    )
-end
-
 mid = Point.new(width/2, height/2)
 puts "#{mid.y} and #{mid.x}"
 
+draw_line(20,20,40,40,0,col)
+draw_pixel(30,50,0,col)
+draw_pixel(40,50,0,col)
+draw_axis(mid.x,mid.y)
+draw_text('hello',50,50,1,0,20,col)
+
+plot_equation(-200..200) {|x| x*x -10}
+
 update do
-    Line(20,40,20,40,0,'teal')
-    Pixel(30,50,0,'teal')
-    Pixel(40,50,0,'teal')
+
 end
 
 show
