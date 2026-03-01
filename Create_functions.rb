@@ -27,9 +27,7 @@ def draw_pixel(x,y,z,color)
     )
 end
 
-def plot_equation(range, &formula)
-    wide = get :width
-    high = get :height
+def plot_equation(range, wide, high, &formula)
     range.each do |x1|
         x2 = x1 + 1
         y1 = formula.call(x1)
@@ -50,9 +48,7 @@ def draw_text(txt,x,y,z,rotation,size,color)
     )
 end
 
-def draw_axis(middlex,middley)
-    wide = get :width
-    high = get :height
+def draw_axis(middlex,middley,wide,high)
     draw_line(0,middley,wide,middley,0,'black')
     draw_line(middlex,0,middlex,high,0,'black')
 end
