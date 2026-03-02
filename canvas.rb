@@ -38,7 +38,11 @@ class Canvas
     def run
         draw_axis
         plot_everything
-        update {}
+        update do
+            clear
+            draw_axis
+            plot_everything
+        end
         show
     end
 
@@ -52,7 +56,7 @@ class Canvas
         Drawing.draw_line(
             x1 + @mid.x, @mid.y - y1,
             x2 + @mid.x, @mid.y - y2,
-            0, eq.color
+            eq.zindex, eq.color
         )
         y1 = y2
         end
