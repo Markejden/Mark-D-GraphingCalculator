@@ -20,3 +20,21 @@ class Equation
     @visible = !@visible
   end
 end
+
+class Text
+  attr_accessor :content,:inx,:iny,:size,:rot,:zindex,:color,:visible  
+  def initialize(content: 'hej', inx: 0, iny: 0, size: 25, rot: 0, zindex: 0, color: 'black', visible: true)
+    @content = content
+    @inx = inx
+    @iny = iny
+    @zindex = zindex
+    @size = size
+    @rot = rot
+    @color = color
+    @visible = visible
+  end
+
+  def toggle!
+    @visible = !@visible
+  end
+end

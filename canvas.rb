@@ -17,10 +17,15 @@ class Canvas
         @height   = get :height
         @mid      = Point.new(@width / 2, @height / 2)
         @equations = []
+        @text = []
     end
 
     def add_equation(equation)
         @equations << equation
+    end
+
+    def add_text(text)
+        @text << text
     end
     
     def draw_axis
@@ -33,6 +38,15 @@ class Canvas
             next if !eq.visible 
             plot_equation(eq)
         end
+
+        @text.each do |txt|
+            next if !txt.visible 
+            plot_text(txt)
+        end
+    end
+
+    def plot_text(text)
+        Drawing.draw_text(text.content,text.inx,text.iny,text.zindex,text.rot,text.size,text.color)
     end
 
     def run
@@ -46,7 +60,6 @@ class Canvas
         show
     end
 
-    
     def plot_equation(eq)
         range = (-@width/2..@width/2)
         y1 = eq.evaluate(range.first)
