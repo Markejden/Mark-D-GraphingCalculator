@@ -6,13 +6,12 @@ set resizable: true
 col = 'black'
 WIDTH = get :width
 HEIGHT = get :height
-mid = Point.new(WIDTH/2, HEIGHT/2)
-puts "#{mid.y} and #{mid.x}"
+
 
 andragraden = Equation.new(color: 'red', zindex: 1)  { |x| x * x - 10 }
 sine = Equation.new(color: 'blue', zindex: 2) { |x| Math.sin(x) * 10 }
-hej = Text.new(content: 'bomboclot',inx: 50, iny: 50)
-heja = Text.new(content: 'Rasta',inx: 50, iny: 30)
+hej = Text.new(content: 'Dabble',inx: 50, iny: 50)
+heja = Text.new(content: 'Dibble',inx: 50, iny: 30)
 
 canvas = Canvas.new
 canvas.add_equation(sine)
@@ -21,8 +20,7 @@ canvas.add_text(hej)
 canvas.add_text(heja)
 
 on :key_down do |event|
-  sine.toggle!
-  canvas.plot_everything if event.key == 's'
+  sine.toggle
 end
 
 canvas.run
