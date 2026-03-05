@@ -16,9 +16,12 @@ class Canvas
         @width    = get :width
         @height   = get :height
         @mid      = Truepoint.new(@width / 2, @height / 2)
+        @panx = 0
+        @pany = 0
         @equations = []
         @texts = []
         @points = []
+        @lines = []
     end
 
     def add_equation(equation)
@@ -32,10 +35,14 @@ class Canvas
     def add_point(point)
         @points << point
     end
+
+    def add_line(line)
+        @lines << line
+    end
     
     def draw_axis
-        Drawing.draw_line(0,@mid.y,@width,@mid.y,0,'black')
-        Drawing.draw_line(@mid.x,0,@mid.x,@height,0,'black')
+        Drawing.draw_line(0,@mid.y+@pany,@width,@mid.y+@pany,0,'black')
+        Drawing.draw_line(@mid.x+@panx,0,@mid.x+@panx,@height,0,'black')
     end
 
     def plot_everything
@@ -53,10 +60,16 @@ class Canvas
             next if !point.visible 
             plot_point(point)
         end
+
+        @lines.each do |line|
+            next if !line.visible
+            plot_line(line)
+        end
     end
 
     def run
         update do
+            @zoom = 1.0+(50.0-((@points[0].iny)-405.0))/25
             clear
             draw_axis
             plot_everything
@@ -65,17 +78,23 @@ class Canvas
     end
 
     def plot_equation(eq)
-        range = (-@width/2..@width/2)
-        y1 = eq.evaluate(range.first)
+        resolution = 1.0 / @zoom
+        rangestart = (-@width/@zoom/2)-(@panx/@zoom)
+        rangeend = (@width/@zoom/2)-(@panx/@zoom)
 
-        range.each_cons(2) do |x1, x2|
-        y2 = eq.evaluate(x2)
-        Drawing.draw_line(
-            x1 + @mid.x, @mid.y - y1,
-            x2 + @mid.x, @mid.y - y2,
-            eq.zindex, eq.color
-        )
-        y1 = y2
+        x1 = rangestart
+        y1 = eq.evaluate(x1)
+
+        while x1 < rangeend
+            x2 = x1 + resolution
+            y2 = eq.evaluate(x2)
+            Drawing.draw_line(
+                (x1*@zoom)+@mid.x+@panx, @pany+@mid.y-(y1*@zoom),
+                (x2*@zoom)+@mid.x+@panx, @pany+@mid.y-(y2*@zoom),
+                eq.zindex, eq.color
+            )
+            x1 = x2
+            y1 = y2
         end
     end
 
@@ -85,5 +104,14 @@ class Canvas
 
     def plot_point(point)
         Drawing.draw_point(point.inx, point.iny, point.zindex, point.color,)
+    end
+
+    def plot_line(line)
+        Drawing.draw_line(line.inx1,line.iny1,line.inx2,line.iny2,line.zindex,line.color)
+    end
+
+    def pan_to(x,y)
+        @panx += x
+        @pany += y
     end
 end

@@ -55,3 +55,20 @@ class Point
     @visible = !@visible
   end
 end
+
+class Line
+  attr_accessor :inx1, :iny1, :inx2,:iny2, :zindex, :color, :visible
+  def initialize(inx1: 0, iny1: 0,inx2: 0, iny2: 0, zindex: 0, color: 'black', visible: true)
+    @inx1 = inx1
+    @iny1 = iny1    
+    @inx2 = inx2
+    @iny2 = iny2
+    @zindex = zindex
+    @color = color
+    @visible = visible
+  end
+
+  def toggle
+    @visible = !@visible
+  end
+end
