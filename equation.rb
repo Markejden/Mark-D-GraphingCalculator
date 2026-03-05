@@ -1,5 +1,5 @@
 class Equation
-  attr_accessor :color,:zindex,:visible,:offsetx,:offsety
+  attr_accessor :color,:zindex,:visible
 
   def initialize(color: 'black', visible: true, zindex: 0, &formula)
     raise ArgumentError, 'no formula' if !block_given?
@@ -8,8 +8,6 @@ class Equation
     @color = color
     @visible = visible
     @zindex = zindex
-    @offsetx = 0
-    @offsety = 0
   end
 
   def evaluate(x)
@@ -17,6 +15,7 @@ class Equation
       @formula.call(x)
     rescue => e
       nil
+    end
   end
 
   def toggle
@@ -33,6 +32,21 @@ class Text
     @zindex = zindex
     @size = size
     @rot = rot
+    @color = color
+    @visible = visible
+  end
+
+  def toggle
+    @visible = !@visible
+  end
+end
+
+class Point
+  attr_accessor :inx, :iny, :zindex, :color, :visible
+  def initialize(inx: 0, iny: 0, zindex: 0, color: 'black', visible: true)
+    @inx = inx
+    @iny = iny
+    @zindex = zindex
     @color = color
     @visible = visible
   end

@@ -11,10 +11,10 @@ module Drawing
         )
     end
 
-    def self.draw_pixel(x,y,z,color)
+    def self.draw_point(x,y,z,color)
         Ruby2D::Square.new(
-            x: x, y: y,
-            size: 1,
+            x: x-3, y: y-3, # då 3 är hälften av 6 för kvadrater spawnar på upleft hörnen
+            size: 6,
             color: color,
             z: z
         )

@@ -2,7 +2,7 @@ require 'ruby2d'
 require_relative 'equation'
 require_relative 'drawing'
 
-class Point
+class Truepoint
   attr_accessor :x, :y
   def initialize(x, y)
     @x = x
@@ -15,9 +15,10 @@ class Canvas
     def initialize
         @width    = get :width
         @height   = get :height
-        @mid      = Point.new(@width / 2, @height / 2)
+        @mid      = Truepoint.new(@width / 2, @height / 2)
         @equations = []
-        @text = []
+        @texts = []
+        @points = []
     end
 
     def add_equation(equation)
@@ -25,7 +26,11 @@ class Canvas
     end
 
     def add_text(text)
-        @text << text
+        @texts << text
+    end
+
+    def add_point(point)
+        @points << point
     end
     
     def draw_axis
@@ -39,19 +44,18 @@ class Canvas
             plot_equation(eq)
         end
 
-        @text.each do |txt|
+        @texts.each do |txt|
             next if !txt.visible 
             plot_text(txt)
         end
-    end
 
-    def plot_text(text)
-        Drawing.draw_text(text.content,text.inx,text.iny,text.zindex,text.rot,text.size,text.color)
+        @points.each do |point|
+            next if !point.visible 
+            plot_point(point)
+        end
     end
 
     def run
-        draw_axis
-        plot_everything
         update do
             clear
             draw_axis
@@ -73,5 +77,13 @@ class Canvas
         )
         y1 = y2
         end
+    end
+
+    def plot_text(text)
+        Drawing.draw_text(text.content,text.inx,text.iny,text.zindex,text.rot,text.size,text.color)
+    end
+
+    def plot_point(point)
+        Drawing.draw_point(point.inx, point.iny, point.zindex, point.color,)
     end
 end
