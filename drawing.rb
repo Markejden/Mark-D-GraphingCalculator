@@ -31,4 +31,13 @@ module Drawing
         z: z
         )
     end
+
+    def self.draw_rectangle(x,y,w,h,z,color)
+        Ruby2D::Rectangle.new(
+        x: x, y: y,
+        width: w, height: h,
+        color: color,
+        z: z
+        )
+    end
 end

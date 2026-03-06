@@ -18,10 +18,12 @@ class Canvas
         @mid      = Truepoint.new(@width / 2, @height / 2)
         @panx = 0
         @pany = 0
+        @eq = ""
         @equations = []
         @texts = []
         @points = []
         @lines = []
+        @rectangles = []
     end
 
     def add_equation(equation)
@@ -38,6 +40,10 @@ class Canvas
 
     def add_line(line)
         @lines << line
+    end
+
+    def add_rectangle(rect)
+        @rectangles << rect
     end
     
     def draw_axis
@@ -65,6 +71,11 @@ class Canvas
             next if !line.visible
             plot_line(line)
         end
+
+        @rectangles.each do |rect|
+            next if !rect.visible
+            plot_rectangle(rect)
+        end
     end
 
     def run
@@ -88,11 +99,13 @@ class Canvas
         while x1 < rangeend
             x2 = x1 + resolution
             y2 = eq.evaluate(x2)
+            next if y1.nil? || y2.nil?
             Drawing.draw_line(
                 (x1*@zoom)+@mid.x+@panx, @pany+@mid.y-(y1*@zoom),
                 (x2*@zoom)+@mid.x+@panx, @pany+@mid.y-(y2*@zoom),
                 eq.zindex, eq.color
             )
+
             x1 = x2
             y1 = y2
         end
@@ -108,6 +121,10 @@ class Canvas
 
     def plot_line(line)
         Drawing.draw_line(line.inx1,line.iny1,line.inx2,line.iny2,line.zindex,line.color)
+    end
+
+    def plot_rectangle(rect)
+        Drawing.draw_rectangle(rect.inx, rect.iny, rect.wide, rect.high, rect.zindex, rect.color)
     end
 
     def pan_to(x,y)

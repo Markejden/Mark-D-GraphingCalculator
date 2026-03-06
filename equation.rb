@@ -1,5 +1,5 @@
 class Equation
-  attr_accessor :color,:zindex,:visible
+  attr_accessor :color,:zindex,:visible 
 
   def initialize(color: 'black', visible: true, zindex: 0, &formula)
     raise ArgumentError, 'no formula' if !block_given?
@@ -13,13 +13,17 @@ class Equation
   def evaluate(x)
     begin
       @formula.call(x)
-    rescue => e
+    rescue Math::DomainError, ZeroDivisionError, FloatDomainError
       nil
     end
   end
 
   def toggle
     @visible = !@visible
+  end
+
+  def set_formula(&block)
+    @formula = block
   end
 end
 
@@ -63,6 +67,23 @@ class Line
     @iny1 = iny1    
     @inx2 = inx2
     @iny2 = iny2
+    @zindex = zindex
+    @color = color
+    @visible = visible
+  end
+
+  def toggle
+    @visible = !@visible
+  end
+end
+
+class Rectangle
+  attr_accessor :inx, :iny, :wide, :high, :zindex, :color, :visible
+  def initialize(inx: 0, iny: 0, wide: 5, high: 5, zindex: 0, color: 'black', visible: true)
+    @inx = inx
+    @iny = iny
+    @wide = wide
+    @high = high
     @zindex = zindex
     @color = color
     @visible = visible
