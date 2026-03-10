@@ -21,7 +21,7 @@ heja = Text.new(content: 'Dibble',inx: 50, iny: 30, zindex:5)
 
 sliderline = Line.new(inx1: 40, iny1: HEIGHT-80, inx2: 40, iny2: HEIGHT-20, zindex:4)
 
-inputbox = Rectangle.new(inx: 80, iny: HEIGHT-20, wide: 300, high: -30, zindex: 4)
+inputbox = Rectangle.new(inx: 80, iny: HEIGHT-20, wide: 100, high: -30, zindex: 4) # 300 ÄR LIKA STORT SOM 27 KARAKTÄRER
 textbox = Text.new(content: '_',inx: 80, iny: HEIGHT-50,zindex:5, color: 'white',size:20)
 
 canvas = Canvas.new

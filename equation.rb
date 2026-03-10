@@ -25,6 +25,10 @@ class Equation
   def set_formula(&block)
     @formula = block
   end
+
+  def self.timestwo(x)
+    x*2
+  end
 end
 
 class Text

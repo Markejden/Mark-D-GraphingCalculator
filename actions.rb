@@ -55,7 +55,7 @@ class Actions
     def self.inputbox(text,box, &finish)
         inputs = []
         typing = false
-
+        shiftbuffer = false
         on :mouse_down do |event|
             next unless event.button == :left
             next unless (event.x - (box.inx + 80)).abs < 80 && (event.y - (box.iny - 15)).abs < 15
@@ -71,6 +71,8 @@ class Actions
             elsif event.key == 'backspace'
                 inputs.pop
                 text.content = inputs.join
+            elsif event.key == 'right shift' || event.key == 'left shift'
+                shiftbuffer = true
             else
                 key = case event.key
                     when '-' then '+'
@@ -78,14 +80,16 @@ class Actions
                     when '\\' then '*'
                     when '`' then '('
                     when '=' then ')'
-                    when 'm' then 'M'
                     when ']' then '**'
+                    when 'right ctrl' then 'Equation.'
                     else event.key
                 end
-                inputs << key
+                shiftbuffer ? inputs << key.upcase : inputs << key
                 text.content = inputs.join
+                shiftbuffer = false
                 #case är som en längre if statement med flera passerande conditions
             end
+            box.wide = 10 + 10*(inputs.join.length)
         end
     end
 
