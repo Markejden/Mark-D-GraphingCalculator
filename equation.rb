@@ -13,7 +13,7 @@ class Equation
   def evaluate(x)
     begin
       @formula.call(x)
-    rescue Math::DomainError, ZeroDivisionError, FloatDomainError
+    rescue Exception
       nil
     end
   end

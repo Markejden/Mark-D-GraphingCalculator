@@ -52,7 +52,7 @@ class Actions
         end
     end
 
-    def self.inputbox(box, &finish)
+    def self.inputbox(text,box, &finish)
         inputs = []
         typing = false
 
@@ -70,6 +70,7 @@ class Actions
                 typing = false
             elsif event.key == 'backspace'
                 inputs.pop
+                text.content = inputs.join
             else
                 key = case event.key
                     when '-' then '+'
@@ -82,12 +83,13 @@ class Actions
                     else event.key
                 end
                 inputs << key
+                text.content = inputs.join
                 #case är som en längre if statement med flera passerande conditions
             end
         end
     end
 
-    def self.valid_ruby(code)
+    def self.valid_ruby?(code)
         RubyVM::InstructionSequence.compile(code)
         true
     rescue SyntaxError

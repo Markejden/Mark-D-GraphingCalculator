@@ -99,12 +99,13 @@ class Canvas
         while x1 < rangeend
             x2 = x1 + resolution
             y2 = eq.evaluate(x2)
-            next if y1.nil? || y2.nil?
-            Drawing.draw_line(
-                (x1*@zoom)+@mid.x+@panx, @pany+@mid.y-(y1*@zoom),
-                (x2*@zoom)+@mid.x+@panx, @pany+@mid.y-(y2*@zoom),
-                eq.zindex, eq.color
-            )
+            unless y1.nil? || y2.nil?
+                Drawing.draw_line(
+                    (x1*@zoom)+@mid.x+@panx, @pany+@mid.y-(y1*@zoom),
+                    (x2*@zoom)+@mid.x+@panx, @pany+@mid.y-(y2*@zoom),
+                    eq.zindex, eq.color
+                )
+            end
 
             x1 = x2
             y1 = y2
