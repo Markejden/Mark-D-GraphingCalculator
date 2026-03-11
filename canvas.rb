@@ -37,14 +37,14 @@ class Canvas
 
     def plot_everything
         plot_axis
-        @objects.each do |eq|
-            next if !eq.visible 
-            objclass = eq.class
-            plot_equation(eq) if objclass == Equation
-            plot_text(eq) if objclass == Text
-            plot_point(eq) if objclass == Point
-            plot_line(eq) if objclass == Line
-            plot_rectangle(eq) if objclass == Rectangle
+        @objects.each do |obj|
+            next if !obj.visible 
+            objclass = obj.class
+            plot_equation(obj) if objclass == Equation
+            plot_text(obj) if objclass == Text
+            plot_point(obj) if objclass == Point
+            plot_line(obj) if objclass == Line
+            plot_rectangle(obj) if objclass == Rectangle
         end
     end
 
@@ -55,7 +55,7 @@ class Canvas
 
         @equation_pool[eq] ||= Array.new(2000){Ruby2D::Line.new(x1: -10, y1: -10, x2: -10, y2: -10, width: 1, z: eq.zindex)}
         #Array.new(2000){} gör en ny array med 2000 slots som har innehållet av blocket, object pooling
-        # alltså finns det alltid 2000 linjer åt alla ekvations objekt precis utanför skärmen
+        # alltså finns det alltid 2000 linjer åt alla ekvations linjer precis utanför skärmen
         pool = @equation_pool[eq]
         x1 = rangestart
         y1 = eq.evaluate(x1)
@@ -82,7 +82,7 @@ class Canvas
                     end
                 end
                 #allt över är för failsafe emot continouity errors, jag kollade online och det verkar inte som att det finns någon universiell lösning
-                #så jag skapade tre scenarion
+                #så jag skapade tre scenarion istället som täcker de flesta basfall, tanx ser fortfarande lite kass ut
                 if linedraw && line_index < pool.length
                     line = pool[line_index]
                     line.x1 = (x1*@zoom)+@mid.x+@panx
@@ -107,8 +107,8 @@ class Canvas
 
     def plot_axis
         #||= är iprincip "om nil, ge detta värde" bra för ny object pooling metoden
-        @axis_x ||= Ruby2D::Line.new(color: 'black', z: 0, width: 1)
-        @axis_y ||= Ruby2D::Line.new(color: 'black', z: 0, width: 1)
+        @axis_x ||= Ruby2D::Line.new(color: 'gray', z: 0, width: 1)
+        @axis_y ||= Ruby2D::Line.new(color: 'gray', z: 0, width: 1)
         @axis_x.x1 = 0
         @axis_x.y1 = @mid.y + @pany
         @axis_x.x2 = @width
@@ -118,8 +118,9 @@ class Canvas
         @axis_y.y1 = 0
         @axis_y.x2 = @mid.x + @panx
         @axis_y.y2 = @height
-
-        @point_pool[0] ||= Array.new(1000) { Ruby2D::Square.new(x: -10, y: -10, size: 2, color: 'black', z: 1) }
+        
+        #allt här under är för det mesta en copy paste av equation bara för incrementationen på axien
+        @point_pool[0] ||= Array.new(1000) { Ruby2D::Square.new(x: -10, y: -10, size: 2, color: 'white', z: 1) }
         pool = @point_pool[0]
         point_index = 0
         minx = ((-@mid.x - @panx) / @zoom).floor
@@ -156,12 +157,16 @@ class Canvas
         obj.text = text.content
         obj.x = text.inx
         obj.y = text.iny
+        obj.color = text.color
+        obj.size = text.size
     end
 
     def plot_point(point)
         obj = @ui_shapes[point] ||= Ruby2D::Square.new(size: point.size, color: point.color, z: point.zindex)
         obj.x = point.inx - 3
         obj.y = point.iny - 3
+        obj.color = point.color
+        obj.size = point.size
     end
 
     def plot_line(line)
@@ -178,6 +183,7 @@ class Canvas
         obj.y = rect.iny
         obj.width = rect.wide
         obj.height = rect.high
+        obj.color = rect.color
     end
 
     def pan_to(x,y)

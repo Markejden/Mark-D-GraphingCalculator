@@ -84,6 +84,11 @@ class Actions
                     when 'pagedown' then '"'
                     when 'pageup' then '/'
                     when 'right ctrl' then 'Equation.'
+                    when 'keypad 1' then '@'
+                    when 'keypad 2' then '='
+                    when 'keypad 3' then '?'
+                    when 'keypad 4' then ';'
+                    when 'space' then ' '
                     else event.key
                 end
                 shiftbuffer ? inputs << key.upcase : inputs << key
