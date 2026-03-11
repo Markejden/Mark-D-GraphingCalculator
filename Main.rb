@@ -1,6 +1,7 @@
 require 'ruby2d'
 require_relative 'canvas'
 require_relative 'actions'
+require_relative 'equation'
 set title: 'Desmos', background: 'white'
 set resizable: true
 
