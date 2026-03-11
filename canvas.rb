@@ -10,6 +10,7 @@ end
 
 class Canvas
     include Ruby2D::DSL
+    attr_accessor :zoomslide
     def initialize
         @width = get :width
         @height = get :height
@@ -19,29 +20,23 @@ class Canvas
         @objects = []
         @ui_shapes = {}
         @equation_pool = {}
+        @point_pool = {}
     end
 
     def add_object(ob)
         @objects << ob
     end
 
-    def draw_axis
-        #||= är iprincip "om nil, ge detta värde" bra för ny object pooling metoden
-        @axis_x ||= Ruby2D::Line.new(color: 'black', z: 0, width: 1)
-        @axis_y ||= Ruby2D::Line.new(color: 'black', z: 0, width: 1)
-        
-        @axis_x.x1 = 0
-        @axis_x.y1 = @mid.y + @pany
-        @axis_x.x2 = @width
-        @axis_x.y2 = @mid.y + @pany
-        
-        @axis_y.x1 = @mid.x + @panx
-        @axis_y.y1 = 0
-        @axis_y.x2 = @mid.x + @panx
-        @axis_y.y2 = @height
+    def run
+        update do
+            @zoom = 10.0+(50.0-((@zoomslide.iny)-405.0))/25 if @zoomslide
+            plot_everything
+        end
+        show
     end
 
     def plot_everything
+        plot_axis
         @objects.each do |eq|
             next if !eq.visible 
             objclass = eq.class
@@ -51,15 +46,6 @@ class Canvas
             plot_line(eq) if objclass == Line
             plot_rectangle(eq) if objclass == Rectangle
         end
-    end
-
-    def run
-        update do
-            @zoom = 1.0+(50.0-((@objects[0].iny)-405.0))/25
-            draw_axis
-            plot_everything
-        end
-        show
     end
 
     def plot_equation(eq)
@@ -98,12 +84,12 @@ class Canvas
                 #allt över är för failsafe emot continouity errors, jag kollade online och det verkar inte som att det finns någon universiell lösning
                 #så jag skapade tre scenarion
                 if linedraw && line_index < pool.length
-                    l = pool[line_index]
-                    l.x1 = (x1*@zoom)+@mid.x+@panx
-                    l.y1 = @pany+@mid.y-(y1*@zoom)
-                    l.x2 = (x2*@zoom)+@mid.x+@panx
-                    l.y2 = @pany+@mid.y-(y2*@zoom)
-                    l.color = eq.color
+                    line = pool[line_index]
+                    line.x1 = (x1*@zoom)+@mid.x+@panx
+                    line.y1 = @pany+@mid.y-(y1*@zoom)
+                    line.x2 = (x2*@zoom)+@mid.x+@panx
+                    line.y2 = @pany+@mid.y-(y2*@zoom)
+                    line.color = eq.color
                     line_index += 1
                 end
             end
@@ -119,6 +105,52 @@ class Canvas
         end
     end
 
+    def plot_axis
+        #||= är iprincip "om nil, ge detta värde" bra för ny object pooling metoden
+        @axis_x ||= Ruby2D::Line.new(color: 'black', z: 0, width: 1)
+        @axis_y ||= Ruby2D::Line.new(color: 'black', z: 0, width: 1)
+        @axis_x.x1 = 0
+        @axis_x.y1 = @mid.y + @pany
+        @axis_x.x2 = @width
+        @axis_x.y2 = @mid.y + @pany
+
+        @axis_y.x1 = @mid.x + @panx
+        @axis_y.y1 = 0
+        @axis_y.x2 = @mid.x + @panx
+        @axis_y.y2 = @height
+
+        @point_pool[0] ||= Array.new(1000) { Ruby2D::Square.new(x: -10, y: -10, size: 2, color: 'black', z: 1) }
+        pool = @point_pool[0]
+        point_index = 0
+        minx = ((-@mid.x - @panx) / @zoom).floor
+        maxx = ((@width - @mid.x - @panx) / @zoom).ceil
+        miny = ((@mid.y + @pany - @height) / @zoom).floor
+        maxy = ((@mid.y + @pany) / @zoom).ceil
+
+        (minx..maxx).each do |x|
+            next if x == 0 || point_index >= pool.length 
+            sq = pool[point_index]
+            sq.x = (x * @zoom) + @mid.x + @panx - 1 #hälften av size
+            sq.y = @mid.y + @pany - 1
+            point_index += 1
+        end
+
+        (miny..maxy).each do |y|
+            next if y == 0 || point_index >= pool.length 
+            sq = pool[point_index]
+            sq.x = @mid.x + @panx - 1
+            sq.y = @mid.y + @pany - (y * @zoom) - 1 
+            point_index += 1
+        end
+
+        while point_index < pool.length
+            sq = pool[point_index]
+            sq.x = -10
+            sq.y = -10
+            point_index += 1
+        end
+    end
+
     def plot_text(text)
         obj = @ui_shapes[text] ||= Ruby2D::Text.new(text.content, style: 'bold', size: text.size, color: text.color, z: text.zindex)
         obj.text = text.content
@@ -127,7 +159,7 @@ class Canvas
     end
 
     def plot_point(point)
-        obj = @ui_shapes[point] ||= Ruby2D::Square.new(size: 6, color: point.color, z: point.zindex)
+        obj = @ui_shapes[point] ||= Ruby2D::Square.new(size: point.size, color: point.color, z: point.zindex)
         obj.x = point.inx - 3
         obj.y = point.iny - 3
     end

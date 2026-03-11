@@ -50,11 +50,12 @@ class Text
 end
 
 class Point
-  attr_accessor :inx, :iny, :zindex, :color, :visible
-  def initialize(inx: 0, iny: 0, zindex: 0, color: 'black', visible: true)
+  attr_accessor :inx, :iny, :zindex,:size, :color, :visible
+  def initialize(inx: 0, iny: 0, zindex: 0,size: 1, color: 'black', visible: true)
     @inx = inx
     @iny = iny
     @zindex = zindex
+    @size = size
     @color = color
     @visible = visible
   end

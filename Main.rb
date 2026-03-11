@@ -9,7 +9,8 @@ col = 'black'
 WIDTH = get :width
 HEIGHT = get :height
 
-slider = Point.new(inx: 40, iny: HEIGHT-25,zindex:5)
+slider = Point.new(inx: 40,size:6, iny: HEIGHT-25,zindex:5)
+
 
 userinput = "x*x-15"
 andragraden = Equation.new(color: 'red', zindex: 1){|x|eval(userinput)}
@@ -28,6 +29,7 @@ textbox = Text.new(content: '_',inx: 80, iny: HEIGHT-50,zindex:5, color: 'white'
 
 canvas = Canvas.new
 canvas.add_object(slider) #slider måste vara den första punkten för metoden i update (för nu)
+canvas.zoomslide = slider
 
 #canvas.add_equation(sine)
 canvas.add_object(andragraden)
