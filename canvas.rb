@@ -18,69 +18,33 @@ class Canvas
         @mid      = Truepoint.new(@width / 2, @height / 2)
         @panx = 0
         @pany = 0
-        @eq = ""
-        @equations = []
-        @texts = []
-        @points = []
-        @lines = []
-        @rectangles = []
+        @objects = []
     end
 
-    def add_equation(equation)
-        @equations << equation
+    def add_object(ob)
+        @objects << ob
     end
 
-    def add_text(text)
-        @texts << text
-    end
-
-    def add_point(point)
-        @points << point
-    end
-
-    def add_line(line)
-        @lines << line
-    end
-
-    def add_rectangle(rect)
-        @rectangles << rect
-    end
-    
     def draw_axis
         Drawing.draw_line(0,@mid.y+@pany,@width,@mid.y+@pany,0,'black')
         Drawing.draw_line(@mid.x+@panx,0,@mid.x+@panx,@height,0,'black')
     end
 
     def plot_everything
-        @equations.each do |eq|
+        @objects.each do |eq|
             next if !eq.visible 
-            plot_equation(eq)
-        end
-
-        @texts.each do |txt|
-            next if !txt.visible 
-            plot_text(txt)
-        end
-
-        @points.each do |point|
-            next if !point.visible 
-            plot_point(point)
-        end
-
-        @lines.each do |line|
-            next if !line.visible
-            plot_line(line)
-        end
-
-        @rectangles.each do |rect|
-            next if !rect.visible
-            plot_rectangle(rect)
+            objclass = eq.class
+            plot_equation(eq) if objclass == Equation
+            plot_text(eq) if objclass == Text
+            plot_point(eq) if objclass == Point
+            plot_line(eq) if objclass == Line
+            plot_rectangle(eq) if objclass == Rectangle
         end
     end
 
     def run
         update do
-            @zoom = 1.0+(50.0-((@points[0].iny)-405.0))/25
+            @zoom = 1.0+(50.0-((@objects[0].iny)-405.0))/25
             clear
             draw_axis
             plot_everything
@@ -99,14 +63,35 @@ class Canvas
         while x1 < rangeend
             x2 = x1 + resolution
             y2 = eq.evaluate(x2)
-            unless y1.nil? || y2.nil?
-                Drawing.draw_line(
-                    (x1*@zoom)+@mid.x+@panx, @pany+@mid.y-(y1*@zoom),
-                    (x2*@zoom)+@mid.x+@panx, @pany+@mid.y-(y2*@zoom),
-                    eq.zindex, eq.color
-                )
-            end
 
+            unless y1.nil? || y2.nil?
+                pixel_jump = (y2 - y1).abs * @zoom
+                
+                draw = true
+                if pixel_jump > @height
+                    draw = false
+                elsif pixel_jump > 3.0
+                    mid_x = (x1 + x2) / 2.0
+                    truey = eq.evaluate(mid_x)
+                    
+                    if truey.nil?
+                        draw = false 
+                    else
+                        expecty = (y1 + y2) / 2.0
+                        if (truey - expecty).abs > (y2 - y1).abs * 0.45
+                            draw = false
+                        end
+                    end
+                end
+
+                if draw
+                    Drawing.draw_line(
+                        (x1*@zoom)+@mid.x+@panx, @pany+@mid.y-(y1*@zoom),
+                        (x2*@zoom)+@mid.x+@panx, @pany+@mid.y-(y2*@zoom),
+                        eq.zindex, eq.color
+                    )
+                end
+            end
             x1 = x2
             y1 = y2
         end

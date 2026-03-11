@@ -15,9 +15,9 @@ class Actions
 
         on :mouse_move do |event|
             next unless @@sliderdrag
-            if slider.iny>HEIGHT-20 || slider.iny<HEIGHT-80
+            if slider.iny>HEIGHT-20 || slider.iny<HEIGHT-350
                 @@sliderdrag = false
-                slider.iny = ((slider.iny - (HEIGHT-50)).positive? ? HEIGHT-25 : HEIGHT-75)
+                slider.iny = ((slider.iny - (HEIGHT-50)).positive? ? HEIGHT-25 : HEIGHT-345)
                 #viktigt för dokumentation: såsom jag föstått det körs ? som if (true) och : som else (false)
                 next
             end
@@ -58,7 +58,7 @@ class Actions
         shiftbuffer = false
         on :mouse_down do |event|
             next unless event.button == :left
-            next unless (event.x - (box.inx + 80)).abs < 80 && (event.y - (box.iny - 15)).abs < 15
+            next unless (event.x - (box.inx + box.wide)).abs < box.wide && (event.y - (box.iny - 15)).abs < 15
             typing = true
             inputs = []
         end
@@ -81,6 +81,8 @@ class Actions
                     when '`' then '('
                     when '=' then ')'
                     when ']' then '**'
+                    when 'pagedown' then '"'
+                    when 'pageup' then '/'
                     when 'right ctrl' then 'Equation.'
                     else event.key
                 end
