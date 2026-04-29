@@ -18,7 +18,6 @@ class Actions
             if slider.iny>HEIGHT-20 || slider.iny<HEIGHT-350
                 @@sliderdrag = false
                 slider.iny = ((slider.iny - (HEIGHT-50)).positive? ? HEIGHT-25 : HEIGHT-345)
-                #viktigt för dokumentation: såsom jag föstått det körs ? som if (true) och : som else (false)
                 next
             end
             slider.iny = event.y
@@ -84,10 +83,10 @@ class Actions
                     when 'pagedown' then '"'
                     when 'pageup' then '/'
                     when 'right ctrl' then 'Equation.'
-                    when 'keypad 1' then '@'
-                    when 'keypad 2' then '='
-                    when 'keypad 3' then '?'
-                    when 'keypad 4' then ';'
+                    when 'left ctrl' then '='
+                    when 'left alt' then '?'
+                    when 'TAB' then ';'
+                    when 'home' then ':'
                     when 'space' then ' '
                     else event.key
                 end

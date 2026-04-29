@@ -18,7 +18,7 @@ class Canvas
         @panx = 0
         @pany = 0
         @objects = []
-        @ui_shapes = {}
+        @shapes = {}
         @equation_pool = {}
         @point_pool = {}
     end
@@ -153,7 +153,7 @@ class Canvas
     end
 
     def plot_text(text)
-        obj = @ui_shapes[text] ||= Ruby2D::Text.new(text.content, style: 'bold', size: text.size, color: text.color, z: text.zindex)
+        obj = @shapes[text] ||= Ruby2D::Text.new(text.content, style: 'bold', size: text.size, color: text.color, z: text.zindex)
         obj.text = text.content
         obj.x = text.inx
         obj.y = text.iny
@@ -162,7 +162,7 @@ class Canvas
     end
 
     def plot_point(point)
-        obj = @ui_shapes[point] ||= Ruby2D::Square.new(size: point.size, color: point.color, z: point.zindex)
+        obj = @shapes[point] ||= Ruby2D::Square.new(size: point.size, color: point.color, z: point.zindex)
         obj.x = point.inx - 3
         obj.y = point.iny - 3
         obj.color = point.color
@@ -170,7 +170,7 @@ class Canvas
     end
 
     def plot_line(line)
-        obj = @ui_shapes[line] ||= Ruby2D::Line.new(width: 1, color: line.color, z: line.zindex)
+        obj = @shapes[line] ||= Ruby2D::Line.new(width: 1, color: line.color, z: line.zindex)
         obj.x1 = line.inx1
         obj.y1 = line.iny1
         obj.x2 = line.inx2
@@ -178,7 +178,7 @@ class Canvas
     end
 
     def plot_rectangle(rect)
-        obj = @ui_shapes[rect] ||= Ruby2D::Rectangle.new(width: rect.wide, height: rect.high, color: rect.color, z: rect.zindex)
+        obj = @shapes[rect] ||= Ruby2D::Rectangle.new(width: rect.wide, height: rect.high, color: rect.color, z: rect.zindex)
         obj.x = rect.inx
         obj.y = rect.iny
         obj.width = rect.wide

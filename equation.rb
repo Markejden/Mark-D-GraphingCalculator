@@ -11,11 +11,12 @@ class Equation
   end
 
   def evaluate(x)
-    begin
-      @formula.call(x)
-    rescue Exception
+      result = @formula.call(x)
+      return nil if result.nil?
+      return nil unless result.is_a?(Numeric) && result.real?
+      result.to_f
+  rescue
       nil
-    end
   end
 
   def toggle
