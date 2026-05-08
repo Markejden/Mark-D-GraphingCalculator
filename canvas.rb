@@ -10,7 +10,8 @@ end
 
 class Canvas
     include Ruby2D::DSL
-    attr_accessor :zoomslide
+    attr_accessor :zoomslide, :value_labels, :shapes
+    attr_reader :mid, :panx, :pany, :zoom
     def initialize
         @width = get :width
         @height = get :height
@@ -21,6 +22,7 @@ class Canvas
         @shapes = {}
         @equation_pool = {}
         @point_pool = {}
+        @value_labels
     end
 
     def add_object(ob)
@@ -45,6 +47,13 @@ class Canvas
             plot_point(obj) if objclass == Point
             plot_line(obj) if objclass == Line
             plot_rectangle(obj) if objclass == Rectangle
+        end
+        (@value_labels ||= []).each do |pt|
+            screen_x = (pt[:x] * @zoom) + @mid.x + @panx
+            screen_y = @mid.y + @pany - (pt[:y] * @zoom)
+            @shapes[pt] ||= Ruby2D::Text.new("(#{pt[:x].round(2)}, #{pt[:y].round(2)})", x: screen_x, y: screen_y, size: 15, color: 'white', z: 5)
+            @shapes[pt].x = screen_x
+            @shapes[pt].y = screen_y
         end
     end
 

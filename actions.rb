@@ -1,9 +1,11 @@
 require_relative 'canvas'
+require_relative 'equation'
 
 class Actions
     extend Ruby2D::DSL
     @@sliderdrag = false
     @@pandrag = false
+    @@typing
     def self.slider1(slider)
         @@sliderdrag = false
         on :mouse_down do |event|
@@ -25,6 +27,7 @@ class Actions
 
         on :mouse_up do |event|
             @@sliderdrag = false
+            slider.iny = HEIGHT-25
         end
     end
 
@@ -53,20 +56,20 @@ class Actions
 
     def self.inputbox(text,box, &finish)
         inputs = []
-        typing = false
+        @@typing = false
         shiftbuffer = false
         on :mouse_down do |event|
             next unless event.button == :left
             next unless (event.x - (box.inx + box.wide)).abs < box.wide && (event.y - (box.iny - 15)).abs < 15
-            typing = true
+            @@typing = true
             inputs = []
         end
 
         on :key_down do |event|
-            next unless typing
+            next unless @@typing
             if event.key == 'return'
                 finish.call(inputs.join)
-                typing = false
+                @@typing = false
             elsif event.key == 'backspace'
                 inputs.pop
                 text.content = inputs.join
@@ -96,6 +99,26 @@ class Actions
                 #case är som en längre if statement med flera passerande conditions
             end
             box.wide = 10 + 10*(inputs.join.length)
+        end
+    end
+
+    def self.check_value(canvas, eq)
+        canvas.value_labels ||= []  # store as graph coords
+        on :mouse_down do |event|
+            next unless event.button == :right
+            graf_x = (event.x - canvas.mid.x - canvas.panx) / canvas.zoom
+            graf_y = eq.evaluate(graf_x)
+            next if graf_y.nil?
+            canvas.value_labels << { x: graf_x, y: graf_y }
+        end
+        on :key_down do |event|
+            if (event.key == 'r' && @@typing == false)
+                (canvas.value_labels ||= []).each do |pt|
+                    canvas.shapes[pt].x = 0
+                    canvas.shapes[pt].y = -30
+                end
+                canvas.value_labels = []
+            end
         end
     end
 
