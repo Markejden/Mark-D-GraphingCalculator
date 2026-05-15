@@ -11,9 +11,9 @@ class Equation
   end
 
   def evaluate(x)
-      result = @formula.call(x)
+      result = @formula.call(x) #använder elementen x i @formula för att ge värdet av y genom blocket
       return nil if result.nil?
-      return nil unless result.is_a?(Numeric) && result.real?
+      return nil unless result.is_a?(Numeric) && result.real? #kontroller
       result.to_f
   rescue
       nil
@@ -27,11 +27,11 @@ class Equation
     @formula = block
   end
 
-  def self.timestwo(x)
+  def self.timestwo(x) #bara ett test för att se om man kan kalla funktioner från inputen, går att göra om till vad som för mer komplexa operationer än vad manuell inmatning kan
     x*2
   end
 end
-
+#alla klasser
 class Text
   attr_accessor :content,:inx,:iny,:size,:rot,:zindex,:color,:visible  
   def initialize(content: 'hej', inx: 0, iny: 0, size: 25, rot: 0, zindex: 0, color: 'black', visible: true)

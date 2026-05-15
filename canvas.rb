@@ -1,6 +1,6 @@
 require 'ruby2d'
 
-class Truepoint
+class Truepoint #bara gjord för att jag är van vid att en point finns som 'data' och att man kan kalla den enkelt... som i desmos
   attr_accessor :x, :y
   def initialize(x, y)
     @x = x
@@ -9,8 +9,8 @@ class Truepoint
 end
 
 class Canvas
-    include Ruby2D::DSL
-    attr_accessor :zoomslide, :value_labels, :shapes
+    include Ruby2D::DSL #för att få med alla 2d funktionaliteter utan att kalla require inuti
+    attr_accessor :zoomslide, :value_labels, :shapes #vars som ändras utanför
     attr_reader :mid, :panx, :pany, :zoom
     def initialize
         @width = get :width
@@ -31,7 +31,7 @@ class Canvas
 
     def run
         update do
-            @zoom = 10.0+(50.0-((@zoomslide.iny)-405.0))/25 if @zoomslide
+            @zoom = ((@zoom || 10.0) + (((@height - 185) - @zoomslide.iny) * 0.005)).clamp(0.01, 200.0) if @zoomslide #clamp för en limit på zoomen, ||10 för bas zoom, 0.005 är hastighet delta på zoom
             plot_everything
         end
         show
@@ -48,10 +48,11 @@ class Canvas
             plot_line(obj) if objclass == Line
             plot_rectangle(obj) if objclass == Rectangle
         end
-        (@value_labels ||= []).each do |pt|
-            screen_x = (pt[:x] * @zoom) + @mid.x + @panx
+        (@value_labels ||= []).each do |pt| #'så länge den inte är tom kör detta'
+            screen_x = (pt[:x] * @zoom) + @mid.x + @panx #pt[:x] ser lite skumt ut men det kallar bara en attribute, inga konstigheter
             screen_y = @mid.y + @pany - (pt[:y] * @zoom)
             @shapes[pt] ||= Ruby2D::Text.new("(#{pt[:x].round(2)}, #{pt[:y].round(2)})", x: screen_x, y: screen_y, size: 15, color: 'white', z: 5)
+            #||= lägger bara till om den är tom
             @shapes[pt].x = screen_x
             @shapes[pt].y = screen_y
         end
@@ -161,7 +162,7 @@ class Canvas
         end
     end
 
-    def plot_text(text)
+    def plot_text(text) #alla dessa är för att initiera objecten, inget speciellt eller kul bara iriterande och tråkigt
         obj = @shapes[text] ||= Ruby2D::Text.new(text.content, style: 'bold', size: text.size, color: text.color, z: text.zindex)
         obj.text = text.content
         obj.x = text.inx
@@ -195,7 +196,7 @@ class Canvas
         obj.color = rect.color
     end
 
-    def pan_to(x,y)
+    def pan_to(x,y) #för att pan ska funka tar canvas emot detta functioncallet från actions
         @panx += x
         @pany += y
     end
